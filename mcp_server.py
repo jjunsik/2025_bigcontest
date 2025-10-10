@@ -66,5 +66,34 @@ def search_merchant(merchant_name: str) -> Dict[str, Any]:
         "merchants": merchants
     }
 
+@mcp.tool()
+def search_merchant_knowledge(query: str, k: int = 3) -> Dict[str, Any]:
+    """
+    벡터DB에서 가맹점 관련 지식을 검색합니다.
+
+    매개변수:
+      - query: 검색 질의
+      - k: 반환할 문서 개수
+
+    반환값:
+      - 검색된 문서 정보
+    """
+    from rag.services.search import search_context
+
+    context, docs = search_context(query, k=k)
+
+    return {
+        "found": len(docs) > 0,
+        "count": len(docs),
+        "context": context,
+        "documents": [
+            {
+                "content": doc.page_content,
+                "metadata": doc.metadata
+            }
+            for doc in docs
+        ]
+    }
+
 if __name__ == "__main__":
     mcp.run()

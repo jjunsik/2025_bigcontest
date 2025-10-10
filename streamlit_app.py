@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 import asyncio
 
@@ -11,9 +13,15 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from PIL import Image
 from pathlib import Path
 
+if "GOOGLE_API_KEY" in st.secrets:
+    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+else:
+    st.error("GOOGLE_API_KEY가 secrets.toml에 없습니다.")
+    st.stop()
+
 # 환경변수
 ASSETS = Path("assets")
-GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
 system_prompt = "당신은 친절한 마케팅 상담사입니다. 가맹점명을 받아 해당 가맹점의 방문 고객 현황을 분석하고, 분석 결과를 바탕으로 적절한 마케팅 방법과 채널, 마케팅 메시지를 추천합니다. 결과는 짧고 간결하게, 분석 결과에는 가능한 표를 사용하여 알아보기 쉽게 설명해주세요."
 greeting = "마케팅이 필요한 가맹점을 알려주세요  \n(조회가능 예시: 동대*, 유유*, 똥파*, 본죽*, 본*, 원조*, 희망*, 혁이*, H커*, 케키*)"
@@ -120,3 +128,63 @@ if query := st.chat_input("가맹점 이름을 입력하세요"):
                 error_msg = f"오류가 발생했습니다 #{i}: {exc!r}"
                 st.session_state.messages.append(AIMessage(content=error_msg))
                 render_chat_message("assistant", error_msg)
+
+# 사이드바에 RAG 관리 섹션
+with st.sidebar:
+    st.write("---")
+    st.write("### 🧪 RAG 관리")
+
+    # DB 상태 및 문서 개수 표시
+    import os
+    from rag.vectorstore.faiss_client import get_document_count
+
+    db_exists = os.path.exists("./faiss_db/index.faiss")
+
+    if db_exists:
+        doc_count = get_document_count()
+        st.info(f"✅ 벡터DB 존재 ({doc_count}개 문서)")
+
+        # 재적재 버튼
+        if st.button("🔄 DB 초기화 후 재적재"):
+            import shutil
+
+            if os.path.exists("./faiss_db"):
+                shutil.rmtree("./faiss_db")
+
+            with st.spinner("적재 중..."):
+                try:
+                    from rag.services.ingest import ingest_csv
+
+                    count = ingest_csv("./data/mct_sample.csv")
+                    st.success(f"✅ {count}개 문서 저장 완료!")
+                    st.rerun()  # 개수 업데이트를 위한 재실행
+                except Exception as e:
+                    st.error(f"❌ 오류: {e}")
+    else:
+        st.warning("⚠️ 벡터DB가 없습니다")
+
+        # 첫 적재
+        if st.button("1️⃣ CSV 데이터 적재"):
+            with st.spinner("적재 중..."):
+                try:
+                    from rag.services.ingest import ingest_csv
+
+                    count = ingest_csv("./data/mct_sample.csv")
+                    st.success(f"✅ {count}개 문서 저장 완료!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"❌ 오류: {e}")
+
+    # 검색 테스트
+    if st.button("2️⃣ 검색 테스트"):
+        with st.spinner("검색 중..."):
+            try:
+                from rag.services.search import search_context
+
+                query = "동대 가맹점"
+                context, docs = search_context(query, k=3)
+                st.write(f"**검색 쿼리**: {query}")
+                st.write(f"**검색 결과**: {len(docs)}개 문서")
+                st.text_area("컨텍스트", context, height=200)
+            except Exception as e:
+                st.error(f"❌ 오류: {e}")
