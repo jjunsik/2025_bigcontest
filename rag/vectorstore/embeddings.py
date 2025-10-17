@@ -15,6 +15,5 @@ def get_embeddings(task_type: str = "retrieval_document"):
     """
     return GoogleGenerativeAIEmbeddings(
         model="models/gemini-embedding-001",
-        task_type=task_type,
-        transport="rest"
+        task_type=task_type
     )

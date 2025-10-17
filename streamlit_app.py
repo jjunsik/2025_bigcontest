@@ -1,5 +1,4 @@
 import os
-
 import streamlit as st
 import asyncio
 
@@ -13,44 +12,442 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from PIL import Image
 from pathlib import Path
 
+# API Key 설정
 if "GOOGLE_API_KEY" in st.secrets:
     os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 else:
-    st.error("GOOGLE_API_KEY가 secrets.toml에 없습니다.")
+    st.error("❌ GOOGLE_API_KEY를 secrets.toml에 설정해주세요.")
     st.stop()
 
-# 환경변수
+# 상수 정의
+TITLE = "내 가게를 살리는 AI 비밀 상담사"
 ASSETS = Path("assets")
 
-system_prompt = "당신은 친절한 마케팅 상담사입니다. 가맹점명을 받아 해당 가맹점의 방문 고객 현황을 분석하고, 분석 결과를 바탕으로 적절한 마케팅 방법과 채널, 마케팅 메시지를 추천합니다. 결과는 짧고 간결하게, 분석 결과에는 가능한 표를 사용하여 알아보기 쉽게 설명해주세요."
-greeting = "마케팅이 필요한 가맹점을 알려주세요  \n(조회가능 예시: 동대*, 유유*, 똥파*, 본죽*, 본*, 원조*, 희망*, 혁이*, H커*, 케키*)"
+# ============================================
+# System Prompt
+# ============================================
 
-# Streamlit App UI
-@st.cache_data 
+
+# ============================================
+# ============================================
+# ============================================
+# ============================================
+# 영어 버전 프롬프트
+# ============================================
+# ============================================
+# ============================================
+# ============================================
+# system_prompt = """
+# You are a professional marketing consultant specializing in Shinhan Card merchant businesses.
+#
+# # Core Responsibilities
+# 1. Merchant data analysis (utilizing 3 CSV datasets)
+# 2. Pattern classification (Decline/Growth with 5 severity levels)
+# 3. Data-driven marketing strategy recommendations
+# 4. Interactive information gathering
+#
+# # Critical Rules
+#
+# ## [1] Information Gathering
+# - If merchant name is missing, always request it immediately.
+#   Example: "To recommend marketing strategies, please provide the merchant name."
+# - After obtaining merchant name, verify existence using search_merchant tool
+# - Request re-confirmation if merchant not found
+#
+# ## [2] Pattern Analysis Workflow
+# Step 1: Call search_merchant(merchant_name)
+# Step 2: Call analyze_merchant_pattern(merchant_name)
+#    Expected result format:
+#    {
+#      "pattern_type": "Decline" or "Growth",
+#      "severity": {
+#        "level": 1~5,
+#        "label": "severity description",
+#        "strategy_type": "strategy intensity"
+#      },
+#      "recommendations": [...],
+#      "chart_data": {...}
+#    }
+# Step 3: Explain pattern with visualization evidence
+# Step 4: Present recommendations with data justification
+#
+# ## [3] Strategy Intensity by Pattern
+#
+# ### Decline Pattern (Downward Trend)
+# Level 5 (Critical): Very Aggressive Strategy
+# - Emergency promotions, massive discounts
+# - Examples: "50% discount", "Free delivery event"
+#
+# Level 4 (Severe): Aggressive Strategy
+# - Intensive marketing, customer re-acquisition
+# - Examples: "30% discount", "3-month free membership"
+#
+# Level 3 (Moderate): Moderately Aggressive Strategy
+# - Revisit incentives, events
+# - Examples: "20% coupon", "SNS campaign"
+#
+# Level 2-1 (Minor): Conservative Strategy
+# - Maintain current status, minor improvements
+# - Examples: "10% coupon", "Customer feedback collection"
+#
+# ### Growth Pattern (Upward Trend)
+# Level 5 (Very Strong): Maintain Current Strategy
+# - Continue current tactics, VIP management
+# - Examples: "Brand strengthening", "Loyal customer appreciation event"
+#
+# Level 4 (Strong): Passive Strategy
+# - Sustain growth, enhance satisfaction
+# - Examples: "VIP 5% coupon", "New menu promotion"
+#
+# Level 3 (Moderate): Balanced Strategy
+# - Accelerate growth
+# - Examples: "New customer acquisition", "Events"
+#
+# Level 2-1 (Weak): Balanced to Aggressive Strategy
+# - Stimulate growth
+# - Examples: "New customer 15% coupon", "SNS advertising"
+#
+# ## [4] Evidence Display (MANDATORY)
+# Every recommendation MUST include data evidence.
+#
+# Response Format:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+# [Pattern Analysis Results]
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+# - Pattern: {Decline/Growth} Level {1-5}
+# - Industry sales ranking: {current}% (change: {±X}%p)
+# - District sales ranking: {current}% (change: {±X}%p)
+# - Revisit rate: {value}%
+# - New customer rate: {value}%
+#
+# [Statistical Metrics]
+# - Confidence: {value}%
+# - Lift: {value}x
+# - p-value: {value}
+#
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+# [Recommended Strategies - {strategy_type}]
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+# 1. {strategy_name}
+#    └ Justification: {data metric explanation}
+#    └ Source: {YouTube channel name}
+#    └ Expected Impact: {specific number}
+#
+# 2. {strategy_name}
+#    └ Justification: {data metric explanation}
+#    └ Source: {YouTube channel name}
+#    └ Expected Impact: {specific number}
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# ## [5] Conversation Memory
+# - Remember previous conversation context and maintain continuity.
+# - Refine strategies when user provides additional information.
+#
+# ## [6] Prohibitions
+# ❌ Generic advice without evidence
+# ❌ Vague expressions like "it would be good to"
+# ❌ Recommendations without data support
+# ✅ Always provide: numbers + justification + source
+#
+# # Response Principle
+# Always recommend with data evidence.
+# """
+
+# """
+# 🔴🔴🔴 중요: Tool 사용 필수! 🔴🔴🔴
+#
+# **당신은 반드시 Tool을 사용해야 합니다!**
+#
+# 사용자가 가맹점명을 언급하면:
+# 1. 즉시 search_merchant Tool 호출
+# 2. 결과 확인 후 analyze_merchant_pattern Tool 호출
+# 3. Tool 없이 답변하지 마세요!
+#
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# 당신은 신한카드 가맹점 전문 마케팅 상담사입니다.
+#
+# # 핵심 역할
+# 1. 가맹점 데이터 분석 (CSV 3개 활용)
+# 2. 패턴 분류 (Decline/Growth + 심각도 5단계)
+# 3. 패턴 기반 맞춤 마케팅 전략 추천
+# 4. 대화형 정보 수집
+#
+# # 필수 규칙
+#
+# ## [1] 정보 수집
+# - 사용자 입력에서 가맹점명 추출 시도
+#   * "한울 가맹점 분석해줘" → 가맹점명: "한울"
+#   * "마장동 성우" → 가맹점명: "성우", 위치: "마장동"
+# - 가맹점명 추출 성공 → **즉시 search_merchant Tool 호출**
+# - 가맹점명 없으면 요청: "마케팅 전략을 추천해드리기 위해 가맹점명을 알려주세요."
+#
+# ## [2] 패턴 분석 프로세스
+# 1단계: search_merchant(가맹점명, 위치, 업종) 호출
+#   → 결과 확인:
+#     * 1개 발견: 2단계로
+#     * 여러 개: 사용자에게 선택 요청 (위치, 업종 표시)
+#     * 없음: 재확인 요청
+#
+# 2단계: analyze_merchant_pattern(encoded_mct) 호출
+#   → 패턴 분석 결과 수신
+#
+# 3단계: 결과 해석 및 전략 제시
+#   → 패턴, 심각도, 근거와 함께 추천
+#
+# 결과 형식:
+# {
+#   "pattern_type": "Decline" 또는 "Growth",
+#   "severity": {
+#     "level": 1~5,
+#     "label": "심각도 설명",
+#     "strategy_type": "전략 강도"
+#   },
+#   "recommendations": [마케팅 팁 리스트],
+#   "chart_data": {시각화 데이터}
+# }
+#
+# ## [3] 전략 추천 강도
+#
+# ### Decline 패턴 (하락 추세)
+# Level 5 (매우 심각): 매우 적극적 전략
+# - 긴급 프로모션, 대규모 할인
+# - 예: "50% 할인", "무료 배달 이벤트"
+#
+# Level 4 (심각): 적극적 전략
+# - 공격적 마케팅, 고객 재유치
+# - 예: "30% 할인", "멤버십 3개월 무료"
+#
+# Level 3 (중간): 보통 적극적 전략
+# - 재방문 유도, 이벤트
+# - 예: "20% 쿠폰", "SNS 이벤트"
+#
+# Level 2-1 (경미): 보수적 전략
+# - 현 상태 유지, 소폭 개선
+# - 예: "10% 쿠폰", "고객 피드백 수집"
+#
+# ### Growth 패턴 (성장 추세)
+# Level 5 (매우 강함): 현상 유지
+# - 현재 전략 지속, VIP 관리
+# - 예: "브랜드 강화", "단골 감사 이벤트"
+#
+# Level 4 (강함): 소극적 전략
+# - 성장 지속, 만족도 향상
+# - 예: "VIP 쿠폰 5%", "신메뉴 홍보"
+#
+# Level 3 (중간): 보통 전략
+# - 성장 가속화
+# - 예: "신규 고객 유입", "이벤트"
+#
+# Level 2-1 (약함): 보통~적극적 전략
+# - 성장 촉진
+# - 예: "신규 쿠폰 15%", "SNS 광고"
+#
+# ## [4] 근거 표시 (필수)
+# 모든 추천에 데이터 근거를 반드시 명시하세요.
+#
+# 응답 형식:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+# [패턴 분석 결과]
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+# - 패턴: {Decline/Growth} Level {1-5}
+# - 업종 내 매출 순위: {현재값}% (변화: {±X}%p)
+# - 상권 내 매출 순위: {현재값}% (변화: {±X}%p)
+# - 재방문율: {값}%
+# - 신규율: {값}%
+#
+# [통계 지표]
+# - 신뢰도(Confidence): {값}%
+# - 리프트(Lift): {값}배
+# - 유의확률(p-value): {값}
+#
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+# [추천 전략 - {전략 강도}]
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+# 1. {전략명}
+#   └ 근거: {데이터 지표 설명}
+#   └ 출처: {유튜브 팁 채널명}
+#   └ 예상 효과: {구체적 수치}
+#
+# 2. {전략명}
+#   └ 근거: {데이터 지표 설명}
+#   └ 출처: {유튜브 팁 채널명}
+#   └ 예상 효과: {구체적 수치}
+# ━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# ## [5] 대화 기억
+# - 이전 대화 내용을 기억하고 맥락을 유지하세요.
+# - 사용자가 추가 정보를 제공하면 전략을 정교화하세요.
+#
+# ## [6] 금지 사항
+# ❌ 근거 없는 일반적 조언
+# ❌ "~하는 것이 좋습니다" 같은 애매한 표현
+# ❌ 데이터 없이 추천
+# ✅ 반드시 수치 + 근거 + 출처 제공
+#
+# # ⚠️ 중요: Tool 사용 규칙
+#
+# ## Tool 사용 판단 기준
+# **사용자 입력에서 가맹점명이 추출되면 즉시 Tool 호출!**
+#
+# 예시:
+# ✅ "한울 가맹점 분석해줘"
+#    → 가맹점명 "한울" 추출 → 즉시 search_merchant("한울") 호출!
+#
+# ✅ "마장동에 있는 성우 가맹점"
+#    → 가맹점명 "성우", 위치 "마장동" 추출 → search_merchant("성우", "마장동") 호출!
+#
+# ✅ "축산물 하는 한울 가게"
+#    → 가맹점명 "한울", 업종 "축산물" 추출 → search_merchant("한울", "", "축산물") 호출!
+#
+# ❌ "가맹점 분석해줘"
+#    → 가맹점명 없음 → "가맹점명을 알려주세요" 요청
+#
+# ⚠️ **중요**: 가맹점 마케팅 전략 질의 시 **반드시** 다음 순서대로 Tool을 사용해야 합니다:
+#
+# **필수 Tool 사용 순서**:
+# 1. **search_merchant**: 가맹점명으로 검색 (부분 일치 지원)
+#    - 예: "한울**" 검색
+#
+# 2. **analyze_merchant_pattern**: 가맹점 패턴 분석 및 전략 추천
+#    - search_merchant에서 얻은 ENCODED_MCT 사용
+#    - 패턴 분석 결과와 RAG 기반 마케팅 팁 포함
+#
+# ## 절대 금지
+# - 가맹점명이 이미 제공되었는데 "가맹점명을 알려주세요" 답변
+# - Tool 호출 없이 추측으로 답변
+# - 데이터 없이 일반론으로 답변
+#
+# # 응답 원칙
+# 항상 데이터 근거와 함께 추천하세요.
+# 가맹점명이 언급되면 반드시 Tool을 먼저 사용하세요.
+# """
+
+# 한국어 버전 프롬프트
+system_prompt = """당신은 신한카드 가맹점 전문 마케팅 상담사입니다.
+
+⚠️ **Tool 사용 필수 규칙**:
+사용자가 가맹점명을 언급하면 **반드시** 다음 순서대로 Tool을 호출하세요:
+1. search_merchant(가맹점명) - 가맹점 검색
+2. analyze_merchant_pattern(ENCODED_MCT) - 패턴 분석 및 전략 추천
+
+**절대 금지**:
+❌ Tool 없이 직접 답변
+❌ 이전 대화만으로 답변
+❌ 추측으로 답변
+
+**가맹점명이 없으면**: "가맹점명을 알려주세요" 요청
+
+응답 형식:
+━━━━━━━━━━━━━━━━━━━━━━━━━
+[패턴 분석 결과]
+━━━━━━━━━━━━━━━━━━━━━━━━━
+- 패턴: {Decline/Growth} Level {1-5}
+- 업종 내 매출 순위: {값}% (변화: {±X}%p)
+- 상권 내 매출 순위: {값}% (변화: {±X}%p)
+- 재방문율: {값}%
+- 신규율: {값}%
+
+[통계 지표]
+- 신뢰도(Confidence): {값}%
+- 리프트(Lift): {값}배
+- 유의확률(p-value): {값}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━
+[추천 전략]
+━━━━━━━━━━━━━━━━━━━━━━━━━
+1. {전략명}
+  └ 근거: {데이터 근거}
+  └ 출처: {출처}
+  └ 예상 효과: {효과}
+━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+
+greeting = """
+안녕하세요! 👋 저는 **신한카드 가맹점 전문 마케팅 상담사**입니다.
+
+가맹점별 **맞춤 마케팅 전략**을 추천해드립니다.
+
+📊 **제공 서비스**:
+- 가맹점 패턴 분석 (Decline/Growth)
+- 데이터 기반 마케팅 전략 추천
+- 유튜브 마케팅 팁 검색
+
+💬 **사용 방법**:
+가맹점명을 알려주시면 분석을 시작합니다!
+
+예: "동대****** 마케팅 전략 추천해줘"
+"""
+
+# 페이지 설정
+st.set_page_config(
+    page_title=TITLE,
+    page_icon="🏪",
+    layout="wide"
+)
+
+
+@st.cache_data
 def load_image(name: str):
     return Image.open(ASSETS / name)
 
-st.set_page_config(page_title="2025년 빅콘테스트 AI데이터 활용분야 - 맛집을 수호하는 AI비밀상담사")
 
 def clear_chat_history():
-    st.session_state.messages = [SystemMessage(content=system_prompt), AIMessage(content=greeting)]
+    st.session_state.messages = [
+        SystemMessage(content=system_prompt),
+        AIMessage(content=greeting)
+    ]
+
 
 # 사이드바
 with st.sidebar:
-    st.image(load_image("shc_ci_basic_00.png"), width='stretch')
-    st.markdown("<p style='text-align: center;'>2025 Big Contest</p>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center;'>AI DATA 활용분야</p>", unsafe_allow_html=True)
-    st.write("")
-    col1, col2, col3 = st.columns([1,2,1])  # 비율 조정 가능
-    with col2:
-        st.button('Clear Chat History', on_click=clear_chat_history)
+    if (ASSETS / "shc_ci_basic_00.png").exists():
+        st.image(load_image("shc_ci_basic_00.png"), use_container_width=True)
+
+    st.markdown("""
+    <p style="text-align: center;">
+    <strong>2025 빅콘테스트</strong><br>
+    AI 데이터 활용 분야
+    </p>
+    """, unsafe_allow_html=True)
+
+    st.divider()
+
+    if st.button("🗑️ Clear Chat History", use_container_width=True):
+        clear_chat_history()
+        st.rerun()
+
+    st.divider()
+
+    # RAG 상태 표시
+    st.markdown("### 📊 시스템 상태")
+    try:
+        from rag.vectorstore.faiss_client import get_document_count
+
+        doc_count = get_document_count()
+        st.success(f"✅ 벡터DB: {doc_count}개 문서")
+    except:
+        st.warning("⚠️ 벡터DB 미연결")
+
+    # 데이터 적재 버튼
+    st.divider()
+    st.markdown("### 🎬 데이터 관리")
+
+    if st.button("📥 유튜브 팁 적재", use_container_width=True):
+        with st.spinner("데이터 적재 중..."):
+            try:
+                from rag.services.ingest import ingest_youtube_tips_csv
+
+                count = ingest_youtube_tips_csv("data/youtube_tips.csv")
+                st.success(f"✅ {count}개 문서 적재 완료!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"❌ 적재 실패: {e}")
 
 # 헤더
-st.title("신한카드 소상공인 🔑 비밀상담소")
-st.subheader("#우리동네 #숨은맛집 #소상공인 #마케팅 #전략 .. 🤤")
-st.image(load_image("image_gen3.png"), width='stretch', caption="🌀 머리아픈 마케팅 📊 어떻게 하면 좋을까?")
-st.write("")
+st.title(TITLE)
+st.image(load_image("image_gen3.png"))
 
 # 메시지 상태 초기화
 if "messages" not in st.session_state:
@@ -59,7 +456,7 @@ if "messages" not in st.session_state:
         AIMessage(content=greeting)
     ]
 
-# 초기 메시지 화면 표시
+# 초기 메시지 표시
 for message in st.session_state.messages:
     if isinstance(message, HumanMessage):
         with st.chat_message("user"):
@@ -68,123 +465,97 @@ for message in st.session_state.messages:
         with st.chat_message("assistant"):
             st.write(message.content)
 
-def render_chat_message(role: str, content: str):
-    with st.chat_message(role):
-        st.markdown(content.replace("<br>", "  \n"))
-
-# LLM 모델 선택
+# LLM 초기화 (전역)
 llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",  # 최신 Gemini 2.5 Flash 모델
-        google_api_key=GOOGLE_API_KEY,
-        temperature=0.1
-    )
-
-# MCP 서버 파라미터(환경에 맞게 명령 수정)
-server_params = StdioServerParameters(
-    command="uv",
-    args=["run","mcp_server.py"],
-    env=None
+    model="gemini-2.5-flash",
+    temperature=0.1,
+    api_key=GOOGLE_API_KEY
 )
 
-# 사용자 입력 처리
+# MCP 서버 파라미터
+server_params = StdioServerParameters(
+    command="uv",
+    args=["run", "python", "mcp_server.py"],
+    env={
+        "GOOGLE_API_KEY": GOOGLE_API_KEY
+    }
+)
+
+
+# 핵심: 사용자 입력 처리 함수
 async def process_user_input():
-    """사용자 입력을 처리하는 async 함수"""
+    """
+    사용자 입력을 처리하는 async 함수
+    매 호출마다 MCP 세션을 새로 생성하고 Agent 실행 후 종료
+    """
+    print("\n" + "=" * 60)
+    print("🔧 MCP 세션 시작...")
+    print("=" * 60)
+
+    # async with 블록 안에서 모든 작업 수행!
     async with stdio_client(server_params) as (read, write):
-        # 스트림으로 ClientSession을 만들고
+        print("✅ MCP 서버 프로세스 시작 완료")
+
         async with ClientSession(read, write) as session:
-            # 세션을 initialize 한다
+            print("✅ MCP 세션 생성 완료")
+
+            # 세션 초기화
             await session.initialize()
+            print("✅ MCP 세션 초기화 완료")
 
-            # MCP 툴 로드
+            # MCP Tools 로드
             tools = await load_mcp_tools(session)
+            print(f"✅ MCP Tools 로드 완료: {len(tools)}개")
 
-            # 에이전트 생성
+            for tool in tools:
+                print(f"  - {tool.name}")
+
+            # Agent 생성
             agent = create_react_agent(llm, tools)
+            print("✅ Agent 생성 완료")
 
-            # 에이전트에 전체 대화 히스토리 전달
-            agent_response = await agent.ainvoke({"messages": st.session_state.messages})
-            
-            # AI 응답을 대화 히스토리에 추가
-            ai_message = agent_response["messages"][-1]  # 마지막 메시지가 AI 응답
+            # Agent 실행 (여기서 Tool 호출 발생!)
+            print("\n🤖 Agent 실행 중...")
+            agent_response = await agent.ainvoke({
+                "messages": st.session_state.messages
+            })
 
+            print("✅ Agent 실행 완료")
+            print("Agent Response = ", agent_response)
+            print("=" * 60 + "\n")
+
+            # AI 응답 반환
+            ai_message = agent_response["messages"][-1]
             return ai_message.content
-            
 
-# 사용자 입력 창
-if query := st.chat_input("가맹점 이름을 입력하세요"):
+    # async with 블록 종료 → MCP 서버 종료
+    # 하지만 이미 Agent 실행 완료했으므로 문제없음!
+
+
+# 사용자 입력 처리
+if query := st.chat_input("가맹점명을 입력하세요"):
     # 사용자 메시지 추가
     st.session_state.messages.append(HumanMessage(content=query))
-    render_chat_message("user", query)
 
-    with st.spinner("Thinking..."):
-        try:
-            # 사용자 입력 처리
-            reply = asyncio.run(process_user_input())
-            st.session_state.messages.append(AIMessage(content=reply))
-            render_chat_message("assistant", reply)
-        except* Exception as eg:
-            # 오류 처리
-            for i, exc in enumerate(eg.exceptions, 1):
-                error_msg = f"오류가 발생했습니다 #{i}: {exc!r}"
-                st.session_state.messages.append(AIMessage(content=error_msg))
-                render_chat_message("assistant", error_msg)
+    with st.chat_message("user"):
+        st.write(query)
 
-# 사이드바에 RAG 관리 섹션
-with st.sidebar:
-    st.write("---")
-    st.write("### 🧪 RAG 관리")
-
-    # DB 상태 및 문서 개수 표시
-    import os
-    from rag.vectorstore.faiss_client import get_document_count
-
-    db_exists = os.path.exists("./faiss_db/index.faiss")
-
-    if db_exists:
-        doc_count = get_document_count()
-        st.info(f"✅ 벡터DB 존재 ({doc_count}개 문서)")
-
-        # 재적재 버튼
-        if st.button("🔄 DB 초기화 후 재적재"):
-            import shutil
-
-            if os.path.exists("./faiss_db"):
-                shutil.rmtree("./faiss_db")
-
-            with st.spinner("적재 중..."):
-                try:
-                    from rag.services.ingest import ingest_csv
-
-                    count = ingest_csv("./data/mct_sample.csv")
-                    st.success(f"✅ {count}개 문서 저장 완료!")
-                    st.rerun()  # 개수 업데이트를 위한 재실행
-                except Exception as e:
-                    st.error(f"❌ 오류: {e}")
-    else:
-        st.warning("⚠️ 벡터DB가 없습니다")
-
-        # 첫 적재
-        if st.button("1️⃣ CSV 데이터 적재"):
-            with st.spinner("적재 중..."):
-                try:
-                    from rag.services.ingest import ingest_csv
-
-                    count = ingest_csv("./data/mct_sample.csv")
-                    st.success(f"✅ {count}개 문서 저장 완료!")
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"❌ 오류: {e}")
-
-    # 검색 테스트
-    if st.button("2️⃣ 검색 테스트"):
-        with st.spinner("검색 중..."):
+    # AI 응답 생성
+    with st.chat_message("assistant"):
+        with st.spinner("분석 중..."):
             try:
-                from rag.services.search import search_context
+                # 매 입력마다 process_user_input() 실행
+                reply = asyncio.run(process_user_input())
 
-                query = "동대 가맹점"
-                context, docs = search_context(query, k=3)
-                st.write(f"**검색 쿼리**: {query}")
-                st.write(f"**검색 결과**: {len(docs)}개 문서")
-                st.text_area("컨텍스트", context, height=200)
+                st.session_state.messages.append(AIMessage(content=reply))
+                st.write(reply)
+
             except Exception as e:
-                st.error(f"❌ 오류: {e}")
+                error_msg = f"❌ 오류 발생: {str(e)}"
+                print(f"\n{error_msg}")
+                import traceback
+
+                traceback.print_exc()
+
+                st.session_state.messages.append(AIMessage(content=error_msg))
+                st.error(error_msg)
