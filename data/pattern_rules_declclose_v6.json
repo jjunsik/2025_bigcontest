@@ -1,0 +1,461 @@
+[
+  {
+    "pattern_id": "DECLINE_0062",
+    "pattern_type": "Decline",
+    "condition": {
+      "M12_SME_RY_SAA_PCE_RT": "down",
+      "M12_SME_BZN_SAA_PCE_RT": "down"
+    },
+    "metrics": {
+      "support_w": 0.3806,
+      "confidence_decline_w": 1.0,
+      "lift_vs_baseline_decline_w": 1.085,
+      "odds_ratio": 30.2921,
+      "p_value": 0.0001827442,
+      "w_match": 102.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0044",
+    "pattern_type": "Decline",
+    "condition": {
+      "M1_SME_RY_SAA_RAT": "up",
+      "M12_SME_BZN_SAA_PCE_RT": "down"
+    },
+    "metrics": {
+      "support_w": 0.3134,
+      "confidence_decline_w": 1.0,
+      "lift_vs_baseline_decline_w": 1.085,
+      "odds_ratio": 22.2232,
+      "p_value": 0.00125876,
+      "w_match": 84.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0082",
+    "pattern_type": "Decline",
+    "condition": {
+      "M12_SME_BZN_SAA_PCE_RT": "down",
+      "M12_SME_BZN_ME_MCT_RAT": "down"
+    },
+    "metrics": {
+      "support_w": 0.3955,
+      "confidence_decline_w": 0.9906,
+      "lift_vs_baseline_decline_w": 1.0748,
+      "odds_ratio": 10.1181,
+      "p_value": 0.0006829277,
+      "w_match": 106.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0008",
+    "pattern_type": "Decline",
+    "condition": {
+      "M12_SME_BZN_SAA_PCE_RT": "down"
+    },
+    "metrics": {
+      "support_w": 0.5112,
+      "confidence_decline_w": 0.9854,
+      "lift_vs_baseline_decline_w": 1.0692,
+      "odds_ratio": 9.3947,
+      "p_value": 7.125663e-05,
+      "w_match": 137.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0040",
+    "pattern_type": "Decline",
+    "condition": {
+      "M1_SME_RY_SAA_RAT": "up",
+      "M12_SME_RY_SAA_PCE_RT": "down"
+    },
+    "metrics": {
+      "support_w": 0.3619,
+      "confidence_decline_w": 0.9897,
+      "lift_vs_baseline_decline_w": 1.0738,
+      "odds_ratio": 8.7052,
+      "p_value": 0.00179538,
+      "w_match": 97.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0003",
+    "pattern_type": "Decline",
+    "condition": {
+      "M1_SME_RY_SAA_RAT": "up"
+    },
+    "metrics": {
+      "support_w": 0.4851,
+      "confidence_decline_w": 0.9846,
+      "lift_vs_baseline_decline_w": 1.0683,
+      "odds_ratio": 8.3874,
+      "p_value": 0.0001965912,
+      "w_match": 130.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "GROWTH_0010",
+    "pattern_type": "Growth",
+    "condition": {
+      "M12_SME_RY_ME_MCT_RAT": "down"
+    },
+    "metrics": {
+      "support_w": 0.6791,
+      "confidence_decline_w": 0.8901,
+      "lift_vs_baseline_decline_w": 0.9658,
+      "odds_ratio": 0.1391,
+      "p_value": 0.005200428,
+      "w_match": 182.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0009",
+    "pattern_type": "Decline",
+    "condition": {
+      "M12_SME_RY_ME_MCT_RAT": "up"
+    },
+    "metrics": {
+      "support_w": 0.3172,
+      "confidence_decline_w": 0.9882,
+      "lift_vs_baseline_decline_w": 1.0723,
+      "odds_ratio": 7.0632,
+      "p_value": 0.005696201,
+      "w_match": 85.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0052",
+    "pattern_type": "Decline",
+    "condition": {
+      "M1_SME_RY_SAA_RAT": "up",
+      "M12_SME_BZN_ME_MCT_RAT": "down"
+    },
+    "metrics": {
+      "support_w": 0.3097,
+      "confidence_decline_w": 0.988,
+      "lift_vs_baseline_decline_w": 1.0719,
+      "odds_ratio": 6.8127,
+      "p_value": 0.006816476,
+      "w_match": 83.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "GROWTH_0064",
+    "pattern_type": "Growth",
+    "condition": {
+      "M12_SME_RY_SAA_PCE_RT": "up",
+      "M12_SME_RY_ME_MCT_RAT": "down"
+    },
+    "metrics": {
+      "support_w": 0.3321,
+      "confidence_decline_w": 0.8315,
+      "lift_vs_baseline_decline_w": 0.9022,
+      "odds_ratio": 0.1801,
+      "p_value": 0.0001071868,
+      "w_match": 89.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0078",
+    "pattern_type": "Decline",
+    "condition": {
+      "M12_SME_BZN_SAA_PCE_RT": "down",
+      "M12_SME_RY_ME_MCT_RAT": "down"
+    },
+    "metrics": {
+      "support_w": 0.3582,
+      "confidence_decline_w": 0.9792,
+      "lift_vs_baseline_decline_w": 1.0624,
+      "odds_ratio": 4.802,
+      "p_value": 0.008844445,
+      "w_match": 96.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "GROWTH_0005",
+    "pattern_type": "Growth",
+    "condition": {
+      "M12_SME_RY_SAA_PCE_RT": "up"
+    },
+    "metrics": {
+      "support_w": 0.403,
+      "confidence_decline_w": 0.8611,
+      "lift_vs_baseline_decline_w": 0.9343,
+      "odds_ratio": 0.2538,
+      "p_value": 0.002449558,
+      "w_match": 108.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0048",
+    "pattern_type": "Decline",
+    "condition": {
+      "M1_SME_RY_SAA_RAT": "up",
+      "M12_SME_RY_ME_MCT_RAT": "down"
+    },
+    "metrics": {
+      "support_w": 0.3097,
+      "confidence_decline_w": 0.9759,
+      "lift_vs_baseline_decline_w": 1.0589,
+      "odds_ratio": 3.818,
+      "p_value": 0.02682386,
+      "w_match": 83.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "DECLINE_0006",
+    "pattern_type": "Decline",
+    "condition": {
+      "M12_SME_RY_SAA_PCE_RT": "down"
+    },
+    "metrics": {
+      "support_w": 0.5784,
+      "confidence_decline_w": 0.9613,
+      "lift_vs_baseline_decline_w": 1.043,
+      "odds_ratio": 3.6193,
+      "p_value": 0.004672711,
+      "w_match": 155.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  },
+  {
+    "pattern_id": "GROWTH_0090",
+    "pattern_type": "Growth",
+    "condition": {
+      "M12_SME_RY_ME_MCT_RAT": "down",
+      "M12_SME_BZN_ME_MCT_RAT": "down"
+    },
+    "metrics": {
+      "support_w": 0.4478,
+      "confidence_decline_w": 0.8833,
+      "lift_vs_baseline_decline_w": 0.9584,
+      "odds_ratio": 0.3893,
+      "p_value": 0.03561021,
+      "w_match": 120.0,
+      "W_total": 268.0,
+      "base_decline_rate_w": 0.9216,
+      "n_effective": 265
+    },
+    "closure_weighting": {
+      "declining_close_upweight": 2.0,
+      "flat_close_excluded": true,
+      "decl_close_thr": -0.25,
+      "flat_close_thr": -0.1,
+      "close_window": 6
+    },
+    "trend_labeling": {
+      "trend_window": 6,
+      "slope_pos": 0.5,
+      "slope_neg": -0.25
+    }
+  }
+]
