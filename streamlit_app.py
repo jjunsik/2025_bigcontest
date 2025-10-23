@@ -182,51 +182,20 @@ def clear_chat_history():
         AIMessage(content=greeting)
     ]
 
-
-# 사이드바
 with st.sidebar:
-    if (ASSETS / "shc_ci_basic_00.png").exists():
-        st.image(load_image("shc_ci_basic_00.png"), use_container_width=True)
+    st.image(load_image("shc_ci_basic_00.png"), width='stretch')
+    st.markdown("<p style='text-align: center;'>2025 Big Contest</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>AI DATA 활용분야</p>", unsafe_allow_html=True)
+    st.write("")
+    col1, col2, col3 = st.columns([1,2,1])  # 비율 조정 가능
+    with col2:
+        st.button('Clear Chat History', on_click=clear_chat_history)
 
-    st.markdown("""
-    <p style="text-align: center;">
-    <strong>2025 빅콘테스트</strong><br>
-    AI 데이터 활용 분야
-    </p>
-    """, unsafe_allow_html=True)
-
-    st.divider()
-
-    if st.button("🗑️ Clear Chat History", use_container_width=True):
-        clear_chat_history()
-        st.rerun()
-
-    st.divider()
-
-    # RAG 상태 표시
-    st.markdown("### 📊 시스템 상태")
-    try:
-        from rag.vectorstore.faiss_client import get_document_count
-
-        doc_count = get_document_count()
-        st.success(f"✅ 벡터DB: {doc_count}개 문서")
-    except:
-        st.warning("⚠️ 벡터DB 미연결")
-
-    # 데이터 적재 버튼
-    st.divider()
-    st.markdown("### 🎬 데이터 관리")
-
-    if st.button("📥 유튜브 팁 적재", use_container_width=True):
-        with st.spinner("데이터 적재 중..."):
-            try:
-                from rag.services.ingest import ingest_youtube_tips_csv
-
-                count = ingest_youtube_tips_csv("data/youtube_tips.csv")
-                st.success(f"✅ {count}개 문서 적재 완료!")
-                st.rerun()
-            except Exception as e:
-                st.error(f"❌ 적재 실패: {e}")
+# 헤더
+st.title("신한카드 소상공인 🔑 비밀상담소")
+st.subheader("#우리동네 #숨은맛집 #소상공인 #마케팅 #전략 .. 🤤")
+st.image(load_image("image_gen3.png"), width='stretch', caption="🌀 머리아픈 마케팅 📊 어떻게 하면 좋을까?")
+st.write("")
 
 # 헤더
 st.title(TITLE)
